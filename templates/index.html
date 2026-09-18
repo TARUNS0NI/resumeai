@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeAI — Smart Career Assistant</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Mobile sidebar backdrop -->
+  <div id="mobileSidebarBackdrop" onclick="closeMobileSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;backdrop-filter:blur(2px);"></div>
+  <style>
+  #mobileSidebarBackdrop.active { display:block !important; }
+  </style>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <a class="sidebar-logo" href="/">
+      <div class="sidebar-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <span class="sidebar-logo-text">Resume<span>AI</span></span>
+    </a>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Navigation</div>
+      <nav class="sidebar-nav">
+        <button class="snav-item active" id="dashboardBtn" onclick="goToDashboard()">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+          Dashboard
+        </button>
+        <button class="snav-item" onclick="openPanel('history')">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+          History
+          <span class="snav-badge" id="sidebarHistoryCount" style="display:none">0</span>
+        </button>
+        <button class="snav-item" onclick="openPanel('compare')">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+          Compare Resumes
+        </button>
+      </nav>
+    </div>
+
+    <div class="sidebar-section" id="featureSidebarSection" style="display:none;">
+      <div class="sidebar-section-label">Analysis Tools</div>
+      <nav class="sidebar-nav" id="featureSidebarNav">
+        <button class="snav-item active" onclick="switchTab('analysis')" data-tab="analysis">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+          Analysis
+        </button>
+        <button class="snav-item" onclick="switchTab('chart')" data-tab="chart">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+          Score Charts
+        </button>
+        <button class="snav-item" onclick="switchTab('rewrite')" data-tab="rewrite">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          Resume Rewriter
+        </button>
+        <button class="snav-item" onclick="switchTab('interview')" data-tab="interview">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg></span>
+          Interview Prep
+        </button>
+        <button class="snav-item" onclick="switchTab('coverletter')" data-tab="coverletter">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+          Cover Letter
+        </button>
+        <button class="snav-item" onclick="switchTab('roadmap')" data-tab="roadmap">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>
+          Skill Roadmap
+        </button>
+        <button class="snav-item" onclick="switchTab('chat')" data-tab="chat">
+          <span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          AI Career Chat
+        </button>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-theme-row">
+        <span class="sidebar-theme-label">Appearance</span>
+        <div class="theme-pill">
+          <button class="theme-pill-btn active" id="btnLight" onclick="applyTheme('light')" title="Light">☀️</button>
+          <button class="theme-pill-btn" id="btnDark" onclick="applyTheme('dark')" title="Dark">🌙</button>
+        </div>
+      </div>
+      <div class="sidebar-user" id="sidebarUser" onclick="toggleUserMenu()">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">?</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Loading…</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ResumeAI</div>
+        </div>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);flex-shrink:0;"><polyline points="18 15 12 9 6 15"/></svg>
+        <div class="sidebar-user-menu" id="sidebarUserMenu">
+          <a href="/logout" class="logout">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleMobileSidebar()" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-breadcrumb" id="topbarBreadcrumb">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="topbar-actions" id="topbarActions">
+        <div id="topbarResultActions" style="display:none;display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="exportPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export PDF
+          </button>
+          <button class="topbar-btn primary" onclick="resetAll()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            New Analysis
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- GUEST BANNER -->
+      <div class="guest-banner" id="guestBanner" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        You are browsing as a Guest — analyses won't be saved to history.
+        <a href="/login" class="guest-banner-link">Sign in to save →</a>
+      </div>
+
+      <!-- ── INPUT SECTION ── -->
+      <div id="inputSection">
+        <div class="upload-hero">
+          <div class="upload-hero-eyebrow">✦ AI-Powered Career Assistant</div>
+          <h1>Analyze your resume,<br><span>land your dream job</span></h1>
+          <p>Upload your PDF resume and get a comprehensive AI analysis with ATS scores, skill gaps, job matches, and personalized recommendations.</p>
+        </div>
+
+        <div class="upload-card">
+          <div class="upload-card-header">
+            <div class="upload-card-title">Resume PDF</div>
+            <span style="font-size:.72rem;color:var(--muted);">Max 5MB · PDF only</span>
+          </div>
+          <div class="upload-card-body">
+            <div class="drop-zone" id="dropZone">
+              <div class="drop-zone-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="drop-zone-title">Drop your resume here</p>
+              <p class="drop-zone-sub">Drag & drop or click to browse your files</p>
+              <label class="drop-zone-btn" for="resumeFile">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Choose File
+              </label>
+              <input type="file" id="resumeFile" accept=".pdf" hidden>
+            </div>
+            <div class="file-chosen" id="fileName" style="display:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="fileNameText"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="jd-card">
+          <div class="jd-card-header">
+            <div class="jd-card-title">Job Description</div>
+            <span class="jd-opt-badge">Optional</span>
+          </div>
+          <div class="jd-card-body">
+            <textarea id="jdText" placeholder="Paste a job description to get a targeted match score, JD-specific feedback, and tailored interview questions…"></textarea>
+          </div>
+        </div>
+
+        <button class="analyze-cta" id="analyzeBtn" onclick="submitForm()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analyze Resume
+        </button>
+
+        <div class="err-box" id="errorBox">
+          <div class="err-box-inner">
+            <span class="err-icon">⚠️</span>
+            <div class="err-content">
+              <div class="err-title" id="errorTitle">Something went wrong</div>
+              <div class="err-desc" id="errorDesc"></div>
+              <button class="err-retry" onclick="submitForm()">↺ Try Again</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-row">
+          <div class="trust-item"><span class="trust-dot" style="background:var(--green)"></span>Free to use</div>
+          <div class="trust-item"><span class="trust-dot" style="background:var(--purple)"></span>AI-powered analysis</div>
+          <div class="trust-item"><span class="trust-dot" style="background:var(--blue)"></span>ATS compatibility check</div>
+          <div class="trust-item"><span class="trust-dot" style="background:var(--amber)"></span>Instant results</div>
+        </div>
+      </div>
+
+      <!-- ── LOADER ── -->
+      <div class="loader" id="loader">
+        <div class="loader-card">
+          <div class="loader-ring"></div>
+          <p class="loader-title">Analyzing your resume</p>
+          <p class="loader-sub" id="thinkingText">Reading document…</p>
+          <div class="loader-track"><div class="loader-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- ── RESULTS ── -->
+      <div class="results" id="results">
+
+        <!-- Results Header -->
+        <div class="results-header">
+          <div class="results-header-left">
+            <p class="results-eyebrow">Analysis Complete</p>
+            <h2 class="results-h1">Your Resume Report</h2>
+          </div>
+        </div>
+
+        <!-- Score Strip -->
+        <div class="score-strip">
+          <div class="score-tile t-purple">
+            <div class="stile-eyebrow">Overall Score <span class="stile-grade" id="scoreGrade"></span></div>
+            <div class="stile-num purple" id="overallScore">—</div>
+            <div class="stile-bar-track"><div class="stile-bar purple" id="overallBar"></div></div>
+            <div class="stile-caption" id="scoreCaption">—</div>
+          </div>
+          <div class="score-tile t-orange">
+            <div class="stile-eyebrow">ATS Score</div>
+            <div class="stile-num orange" id="atsScore">—</div>
+            <div class="stile-bar-track"><div class="stile-bar orange" id="atsBar"></div></div>
+            <div class="stile-caption" id="atsCaption">ATS compatibility</div>
+          </div>
+          <div class="score-tile t-teal" id="jdTile" style="opacity:.3">
+            <div class="stile-eyebrow">JD Match</div>
+            <div class="stile-num teal" id="jdScore">—</div>
+            <div class="stile-bar-track"><div class="stile-bar teal" id="jdBar"></div></div>
+            <div class="stile-caption">Match with job description</div>
+          </div>
+        </div>
+
+        <!-- Feature Bar (horizontal icon tabs) -->
+        <div class="feature-bar" id="featureBar">
+          <button class="fbar-tab active" onclick="switchTab('analysis')" data-tab="analysis">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <span class="fbar-tab-label">Analysis</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('chart')" data-tab="chart">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <span class="fbar-tab-label">Charts</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('rewrite')" data-tab="rewrite">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <span class="fbar-tab-label">Rewriter</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('interview')" data-tab="interview">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg></div>
+            <span class="fbar-tab-label">Interview</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('coverletter')" data-tab="coverletter">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <span class="fbar-tab-label">Cover Letter</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('roadmap')" data-tab="roadmap">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+            <span class="fbar-tab-label">Roadmap</span>
+          </button>
+          <button class="fbar-tab" onclick="switchTab('chat')" data-tab="chat">
+            <div class="fbar-tab-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <span class="fbar-tab-label">AI Chat</span>
+          </button>
+        </div>
+
+        <!-- ── ANALYSIS TAB ── -->
+        <div class="tab-panel" id="tab-analysis">
+          <div class="rc">
+            <div class="rc-hd"><div class="rc-icon bg-orange"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><h3>ATS Compatibility Check</h3><span class="ats-badge" id="atsBadge">—</span></div>
+            <div class="ats-checks-grid" id="atsChecksGrid"></div>
+            <div class="ats-tips-wrap" id="atsTipsWrap" style="display:none"><p class="ats-tips-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Tips to improve your ATS score</p><div class="blist" id="atsTipsList"></div></div>
+          </div>
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h3>Summary</h3></div><p class="rc-body" id="summaryText"></p></div>
+          <div class="grid-2">
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3>Strengths</h3></div><div class="blist" id="strengthsText"></div></div>
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-red"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><h3>Weaknesses & Gaps</h3></div><div class="blist" id="weaknessText"></div></div>
+          </div>
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-amber"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Improvement Suggestions</h3></div><div class="blist" id="suggestionsText"></div></div>
+          <div class="rc" id="jdFeedbackBlock" style="display:none"><div class="rc-hd"><div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h3>JD-Specific Feedback</h3></div><p class="rc-body" id="jdFeedbackText"></p></div>
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><h3>ATS Keywords to Add</h3></div><div class="kw-row" id="keywordTags"></div></div>
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div><h3>Job Role Matches</h3></div><div id="jobMatchList"></div></div>
+        </div>
+
+        <!-- ── CHART TAB ── -->
+        <div class="tab-panel hidden" id="tab-chart">
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><h3>Score Comparison</h3></div><div class="chart-wrap"><canvas id="scoreChart"></canvas></div></div>
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg></div><h3>Job Match Breakdown</h3></div><div class="chart-wrap-sm"><canvas id="jobChart"></canvas></div></div>
+        </div>
+
+        <!-- ── REWRITE TAB ── -->
+        <div class="tab-panel hidden" id="tab-rewrite">
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>AI Resume Rewriter</h3></div>
+            <p class="rc-body" style="margin-bottom:1rem;">AI rewrites your weak bullet points into strong, ATS-optimized, quantified statements.</p>
+            <button class="go-btn sm-btn" onclick="rewriteResume()">Rewrite My Bullets <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            <div class="err-box" id="rewriteError" style="margin-top:.75rem;"><div class="err-box-inner"><span class="err-icon">⚠️</span><div class="err-content"><div class="err-title">Error</div><div class="err-desc" id="rewriteErrorDesc"></div></div></div></div>
+          </div>
+          <div id="rewriteLoader" style="display:none;text-align:center;padding:2rem;"><div class="spin-ring"></div><p style="color:var(--muted);font-size:.85rem;">Rewriting your bullets…</p></div>
+          <div id="rewriteResult" style="display:none;">
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3>Overall Improvements</h3></div><p class="rc-body" id="rewriteOverall"></p></div>
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Power Words to Use</h3></div><div class="kw-row" id="rewritePowerWords"></div></div>
+            <div id="rewriteBullets"></div>
+          </div>
+        </div>
+
+        <!-- ── INTERVIEW TAB ── -->
+        <div class="tab-panel hidden" id="tab-interview">
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg></div><h3>Interview Question Generator</h3></div>
+            <p class="rc-body" style="margin-bottom:1rem;">Get likely interview questions based on your resume and target role.</p>
+            <div class="roadmap-form">
+              <input type="text" id="interviewRole" placeholder="Target role e.g. Data Analyst, Python Developer…" class="role-input">
+              <button class="go-btn sm-btn" onclick="generateInterview()">Generate <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            </div>
+            <div class="err-box" id="interviewError" style="margin-top:.75rem;"><div class="err-box-inner"><span class="err-icon">⚠️</span><div class="err-content"><div class="err-title">Error</div><div class="err-desc" id="interviewErrorDesc"></div></div></div></div>
+          </div>
+          <div id="interviewLoader" style="display:none;text-align:center;padding:2rem;"><div class="spin-ring"></div><p style="color:var(--muted);font-size:.85rem;">Generating questions…</p></div>
+          <div id="interviewResult" style="display:none;"></div>
+        </div>
+
+        <!-- ── COVER LETTER TAB ── -->
+        <div class="tab-panel hidden" id="tab-coverletter">
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-teal"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3>Cover Letter Generator</h3></div>
+            <p class="rc-body" style="margin-bottom:1rem;">Generate a personalized cover letter for any company and role in one click.</p>
+            <div class="cl-form">
+              <input type="text" id="clCompany" placeholder="Company name e.g. Google, TCS, Infosys…" class="role-input">
+              <input type="text" id="clRole" placeholder="Role e.g. Software Engineer, Data Analyst…" class="role-input">
+              <button class="go-btn sm-btn" onclick="generateCoverLetter()">Generate Cover Letter <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            </div>
+            <div class="err-box" id="clError" style="margin-top:.75rem;"><div class="err-box-inner"><span class="err-icon">⚠️</span><div class="err-content"><div class="err-title">Error</div><div class="err-desc" id="clErrorDesc"></div></div></div></div>
+          </div>
+          <div id="clLoader" style="display:none;text-align:center;padding:2rem;"><div class="spin-ring"></div><p style="color:var(--muted);font-size:.85rem;">Writing your cover letter…</p></div>
+          <div id="clResult" style="display:none;">
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-teal"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3>Key Highlights</h3></div><div class="kw-row" id="clHighlights"></div></div>
+            <div class="rc"><div class="rc-hd"><div class="rc-icon bg-teal"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h3 id="clSubject">Cover Letter</h3><button class="copy-btn" onclick="copyCoverLetter()">📋 Copy</button></div><div class="cl-text" id="clText"></div></div>
+          </div>
+        </div>
+
+        <!-- ── ROADMAP TAB ── -->
+        <div class="tab-panel hidden" id="tab-roadmap">
+          <div class="rc"><div class="rc-hd"><div class="rc-icon bg-green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div><h3>Skill Roadmap Generator</h3></div>
+            <p class="rc-body" style="margin-bottom:1rem;">Get a personalized step-by-step learning plan for your target role.</p>
+            <div class="roadmap-form">
+              <input type="text" id="targetRole" placeholder="Target role e.g. Data Analyst, Python Developer…" class="role-input">
+              <button class="go-btn sm-btn" onclick="generateRoadmap()">Generate Roadmap <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            </div>
+            <div class="err-box" id="roadmapError" style="margin-top:.75rem;"><div class="err-box-inner"><span class="err-icon">⚠️</span><div class="err-content"><div class="err-title">Error</div><div class="err-desc" id="roadmapErrorDesc"></div></div></div></div>
+          </div>
+          <div id="roadmapLoader" style="display:none;text-align:center;padding:2rem;"><div class="spin-ring"></div><p style="color:var(--muted);font-size:.85rem;">Building your roadmap…</p></div>
+          <div id="roadmapResult" style="display:none;">
+            <div class="rc roadmap-meta-card"><div class="roadmap-meta"><div class="roadmap-meta-item"><span class="roadmap-meta-label">Target Role</span><span class="roadmap-meta-val" id="roadmapRole">—</span></div><div class="roadmap-meta-item"><span class="roadmap-meta-label">Total Duration</span><span class="roadmap-meta-val" id="roadmapDuration">—</span></div></div></div>
+            <div id="roadmapSteps"></div>
+            <div class="rc" id="roadmapQuickWins" style="display:none;"><div class="rc-hd"><div class="rc-icon bg-green"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3>Quick Wins This Week</h3></div><div class="blist" id="quickWinsList"></div></div>
+            <div class="rc" id="roadmapTipCard" style="display:none;"><div class="rc-hd"><div class="rc-icon bg-amber"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Final Tip</h3></div><p class="rc-body" id="roadmapFinalTip"></p></div>
+          </div>
+        </div>
+
+        <!-- ── CHAT TAB ── -->
+        <div class="tab-panel hidden" id="tab-chat">
+          <div class="chat-container">
+            <div class="chat-header">
+              <div class="chat-avatar-wrap">🤖</div>
+              <div><p class="chat-name">Career Assistant</p><p class="chat-sub">Ask anything about your resume</p></div>
+              <div class="chat-online"><span class="online-dot"></span>Online</div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-msg bot"><div class="msg-bubble">👋 Hi! I've analyzed your resume. Ask me anything — how to improve your score, skills to learn, interview tips, or career advice!</div></div>
+            </div>
+            <div class="chat-suggestions" id="chatSuggestions">
+              <button class="suggestion-chip" onclick="sendSuggestion(this)">How can I improve my ATS score?</button>
+              <button class="suggestion-chip" onclick="sendSuggestion(this)">What skills am I missing?</button>
+              <button class="suggestion-chip" onclick="sendSuggestion(this)">Which job role suits me best?</button>
+              <button class="suggestion-chip" onclick="sendSuggestion(this)">Give me interview tips</button>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your resume…" onkeydown="if(event.key==='Enter') sendChat()">
+              <button class="chat-send" onclick="sendChat()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /results -->
+    </div><!-- /page -->
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<script src="/static/js/main.js"></script>
+
+<!-- Firebase Auth -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const app = initializeApp({apiKey:"AIzaSyAe_7QNl-m_yDCzX7gYNN11eQ2t-iXDK68",authDomain:"resumeai-a2b7a.firebaseapp.com",projectId:"resumeai-a2b7a",storageBucket:"resumeai-a2b7a.firebasestorage.app",messagingSenderId:"656937907015",appId:"1:656937907015:web:ffb81d5654784ac8385262"});
+const auth = getAuth(app);
+
+function updateUI(name, email, photo) {
+  document.getElementById('sidebarUserName').textContent = name || 'User';
+  document.getElementById('sidebarUserRole').textContent = email || 'Signed in';
+  const av = document.getElementById('sidebarAvatar');
+  if (photo) {
+    av.innerHTML = '<img src="' + photo + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">';
+  } else {
+    av.textContent = (name || 'U').charAt(0).toUpperCase();
+  }
+}
+
+// Single auth check - fires once when Firebase resolves
+onAuthStateChanged(auth, async (firebaseUser) => {
+  if (firebaseUser) {
+    // Firebase has a user - make sure Flask session exists
+    const me = await fetch('/auth/me').then(r => r.json()).catch(() => ({logged_in: false}));
+    if (!me.logged_in) {
+      // Sync Firebase → Flask (no redirect needed, just set session)
+      await fetch('/auth/session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          uid:   firebaseUser.uid,
+          name:  firebaseUser.displayName || '',
+          email: firebaseUser.email || '',
+          photo: firebaseUser.photoURL || ''
+        })
+      }).catch(() => {});
+    }
+    updateUI(
+      firebaseUser.displayName || firebaseUser.email || 'User',
+      firebaseUser.email || '',
+      firebaseUser.photoURL || ''
+    );
+
+  } else {
+    // No Firebase user — check Flask for guest session
+    const me = await fetch('/auth/me').then(r => r.json()).catch(() => ({logged_in: false}));
+    if (me.logged_in && me.is_guest) {
+      document.getElementById('guestBanner').style.display = 'flex';
+      document.getElementById('sidebarUserName').textContent = 'Guest User';
+      document.getElementById('sidebarUserRole').textContent = 'Not signed in';
+      document.getElementById('sidebarAvatar').textContent = '?';
+    } else if (!me.logged_in) {
+      // Truly no session at all — go to login (use replace to avoid back-button loop)
+      window.location.replace('/login');
+    }
+  }
+});
+
+// Sign out button
+document.querySelector('.logout').addEventListener('click', async (e) => {
+  e.preventDefault();
+  try { await signOut(auth); } catch(e) {}
+  window.location.replace('/logout');
+});
+</script>
+
+<!-- ── OVERLAY PANELS ── -->
+<div class="overlay-backdrop" id="overlayBackdrop" onclick="closePanel()" style="display:none;"></div>
+
+<!-- History Panel -->
+<div class="overlay-panel" id="historyPanel" style="display:none;">
+  <div class="panel-header">
+    <div>
+      <p class="results-eyebrow">Dashboard</p>
+      <h2 class="results-h1">Resume History</h2>
+    </div>
+    <button class="panel-close" onclick="closePanel()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="history-stats" style="margin-bottom:1.5rem;">
+      <div class="hstat"><div class="hstat-num" id="pStatTotal">—</div><div class="hstat-label">Total Analyses</div></div>
+      <div class="hstat"><div class="hstat-num purple" id="pStatOverall">—</div><div class="hstat-label">Avg Overall</div></div>
+      <div class="hstat"><div class="hstat-num orange" id="pStatAts">—</div><div class="hstat-label">Avg ATS</div></div>
+      <div class="hstat"><div class="hstat-num green" id="pStatBest">—</div><div class="hstat-label">Best Score</div></div>
+    </div>
+    <div class="rc" id="pTrendCard" style="display:none;margin-bottom:1rem;">
+      <div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><h3>Score Trend</h3></div>
+      <div class="chart-wrap"><canvas id="pTrendChart"></canvas></div>
+    </div>
+    <div class="rc">
+      <div class="rc-hd"><div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg></div><h3>All Analyses</h3></div>
+      <div id="pHistoryEmpty" style="display:none;text-align:center;padding:2rem;color:var(--muted);font-size:.9rem;">No analyses yet. Analyze your first resume to see history here.</div>
+      <div class="history-table-wrap">
+        <table class="history-table" id="pHistoryTable" style="display:none;">
+          <thead><tr><th>#</th><th>File</th><th>Overall</th><th>ATS</th><th>JD</th><th>Best Match</th><th>Date</th></tr></thead>
+          <tbody id="pHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compare Panel -->
+<div class="overlay-panel" id="comparePanel" style="display:none;">
+  <div class="panel-header">
+    <div>
+      <p class="results-eyebrow">Multi-Resume</p>
+      <h2 class="results-h1">Resume Comparator</h2>
+    </div>
+    <button class="panel-close" onclick="closePanel()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="rc">
+      <div class="rc-hd"><div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h3>Upload 2–4 Resumes to Compare</h3></div>
+      <p class="rc-body" style="margin-bottom:1.25rem;">AI will rank all resumes, identify the best candidate, and highlight key differences.</p>
+      <div class="compare-drop" onclick="document.getElementById('compareFiles').click()">
+        <div style="font-size:2rem;margin-bottom:.6rem;">📂</div>
+        <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Click to select 2–4 PDF resumes</p>
+        <p style="font-size:.78rem;color:var(--muted);">Hold Ctrl / Cmd to select multiple files</p>
+        <input type="file" id="compareFiles" accept=".pdf" multiple hidden>
+      </div>
+      <div id="compareFileList" style="margin-top:.85rem;display:flex;flex-wrap:wrap;gap:8px;"></div>
+      <button class="go-btn" id="compareBtn" onclick="compareResumes()" style="margin-top:1.25rem;">
+        Compare Resumes
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <div class="err-box" id="compareError" style="margin-top:.75rem;">
+        <div class="err-box-inner"><span class="err-icon">⚠️</span><div class="err-content"><div class="err-title">Error</div><div class="err-desc" id="compareErrorDesc"></div></div></div>
+      </div>
+    </div>
+    <div id="compareLoader" style="display:none;text-align:center;padding:2.5rem;">
+      <div class="spin-ring" style="margin:0 auto 1rem;"></div>
+      <p style="font-weight:700;color:var(--text);margin-bottom:.3rem;">Comparing resumes…</p>
+      <p style="color:var(--muted);font-size:.82rem;">AI is analyzing and ranking all candidates</p>
+    </div>
+    <div id="compareResult" style="display:none;"></div>
+  </div>
+</div>
+
+
+<script>
+function toggleMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = document.getElementById('mobileSidebarBackdrop');
+  sidebar.classList.toggle('mobile-open');
+  backdrop.classList.toggle('active');
+  document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
+}
+function closeMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = document.getElementById('mobileSidebarBackdrop');
+  sidebar.classList.remove('mobile-open');
+  backdrop.classList.remove('active');
+  document.body.style.overflow = '';
+}
+</script>
+
+</body>
+</html>

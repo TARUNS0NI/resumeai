@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — ResumeAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--purple:#6c47c9;--purple2:#8b67e0;--purple-light:#ede8fb;--text:#0d0f14;--text2:#3d4154;--muted:#7c8098;--border:#e4e6ea;--border2:#d0d3da;--bg:#f0f2f5;--surface:#fff;--green:#14a870;--green-light:#d6f5e8;--red:#e03f3f;--red-light:#fde8e8;}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;}
+
+/* Left panel */
+.left-panel{width:420px;flex-shrink:0;background:linear-gradient(145deg,#1a0f3d,#2d1b6e,#1a0f3d);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden;}
+.left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(108,71,201,.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(139,103,224,.2) 0%,transparent 60%);pointer-events:none;}
+.lp-logo{display:flex;align-items:center;gap:10px;position:relative;z-index:1;}
+.lp-logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(108,71,201,.5);}
+.lp-logo-text{font-size:1.1rem;font-weight:800;color:white;letter-spacing:-.02em;}
+.lp-logo-text span{color:#b59ee8;}
+.lp-content{position:relative;z-index:1;}
+.lp-title{font-size:2rem;font-weight:800;color:white;line-height:1.2;letter-spacing:-.03em;margin-bottom:1rem;}
+.lp-title span{color:#b59ee8;}
+.lp-desc{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:2rem;}
+.lp-features{display:flex;flex-direction:column;gap:.75rem;}
+.lp-feature{display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:500;color:rgba(255,255,255,.75);}
+.lp-feature-dot{width:20px;height:20px;border-radius:50%;background:rgba(108,71,201,.4);border:1px solid rgba(108,71,201,.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;color:#b59ee8;}
+.lp-bottom{position:relative;z-index:1;font-size:.72rem;color:rgba(255,255,255,.3);}
+
+/* Right panel */
+.right-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--bg);}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,0.07);}
+
+/* Tabs */
+.auth-tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:2rem;}
+.auth-tab{flex:1;padding:.5rem;border:none;background:transparent;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:var(--surface);color:var(--purple);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+h2{font-size:1.3rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.3rem;}
+.subtitle{font-size:.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+
+.form-group{margin-bottom:.85rem;}
+label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:.4rem;}
+input{width:100%;padding:.65rem .9rem;border:1px solid var(--border2);border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.875rem;color:var(--text);background:var(--bg);outline:none;transition:all .2s;}
+input:focus{border-color:var(--purple);background:var(--surface);box-shadow:0 0 0 3px rgba(108,71,201,.08);}
+input::placeholder{color:var(--muted);}
+
+.btn{width:100%;padding:.78rem;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:.6rem;}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--purple2));color:white;box-shadow:0 3px 12px rgba(108,71,201,.35);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(108,71,201,.4);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-google{background:var(--surface);color:var(--text);border:1px solid var(--border2);}
+.btn-google:hover{border-color:#4285F4;background:#f0f4ff;}
+
+.divider{display:flex;align-items:center;gap:10px;margin:.6rem 0;color:var(--muted);font-size:.75rem;font-weight:500;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.msg{padding:.7rem .9rem;border-radius:9px;font-size:.8rem;font-weight:500;margin-bottom:.85rem;display:none;align-items:flex-start;gap:7px;line-height:1.5;}
+.msg.error{background:var(--red-light);color:var(--red);border:1px solid #fca5a5;display:flex;}
+.msg.success{background:var(--green-light);color:var(--green);border:1px solid #86efac;display:flex;}
+.msg.info{background:var(--purple-light);color:var(--purple);border:1px solid #d4c8f0;display:flex;}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.terms{font-size:.7rem;color:var(--muted);text-align:center;margin-top:.5rem;line-height:1.5;}
+.terms a{color:var(--purple);text-decoration:none;}
+
+.guest-link{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:1rem;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;border:1.5px dashed var(--border2);border-radius:9px;padding:.6rem;transition:all .2s;background:none;width:100%;font-family:'Plus Jakarta Sans',sans-serif;}
+.guest-link:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light);}
+
+@media(max-width:760px){.left-panel{display:none;}.right-panel{padding:1.25rem;}.auth-card{max-width:100%;border-radius:16px;}}
+</style>
+</head>
+<body>
+
+<div class="left-panel">
+  <div class="lp-logo">
+    <div class="lp-logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+    <span class="lp-logo-text">Resume<span>AI</span></span>
+  </div>
+  <div class="lp-content">
+    <h2 class="lp-title">Your AI-powered<br><span>career assistant</span></h2>
+    <p class="lp-desc">Upload your resume and get instant AI analysis, ATS scores, skill roadmaps, interview preparation, and more — completely free.</p>
+    <div class="lp-features">
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>Comprehensive AI resume analysis</div>
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>ATS compatibility scoring</div>
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>Interview question generator</div>
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>Personalized skill roadmap</div>
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>AI cover letter generator</div>
+      <div class="lp-feature"><div class="lp-feature-dot">✓</div>Career chatbot assistant</div>
+    </div>
+  </div>
+  <div class="lp-bottom">© 2025 ResumeAI · Free forever</div>
+</div>
+
+<div class="right-panel">
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabReg" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <div id="msgMain" class="msg"></div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to access your analyses and career tools.</p>
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div>
+      <button class="btn btn-primary" onclick="signInEmail()" id="btnLogin">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn btn-google" onclick="signInGoogle()">
+        <svg width="17" height="17" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.4-.1-2.7-.5-4z"/><path fill="#34A853" d="M6.3 14.7l7 5.1C15 16.1 19.1 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3 16.3 3 9.7 7.9 6.3 14.7z"/><path fill="#FBBC05" d="M24 45c5.5 0 10.5-1.8 14.4-5l-6.6-5.4C29.8 36.4 27 37 24 37c-6 0-10.6-3-11.8-8.4l-7 5.4C8.7 41.1 15.8 45 24 45z"/><path fill="#EA4335" d="M44.5 20H24v8.5h11.8c-.7 2.8-2.4 5.1-4.8 6.6l6.6 5.4C41.8 37.3 45 31.1 45 24c0-1.4-.1-2.7-.5-4z"/></svg>
+        Continue with Google
+      </button>
+      <button class="guest-link" onclick="continueAsGuest()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Continue as Guest
+      </button>
+      <p class="terms">By signing in you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none;">
+      <h2>Create account</h2>
+      <p class="subtitle">Join ResumeAI and start optimizing your career.</p>
+      <div class="form-group"><label>Full Name</label><input type="text" id="regName" placeholder="Your full name"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Minimum 6 characters"></div>
+      <button class="btn btn-primary" onclick="registerEmail()" id="btnReg">Create Account</button>
+      <div class="divider">or</div>
+      <button class="btn btn-google" onclick="signInGoogle()">
+        <svg width="17" height="17" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.4-.1-2.7-.5-4z"/><path fill="#34A853" d="M6.3 14.7l7 5.1C15 16.1 19.1 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 5.1 29.6 3 24 3 16.3 3 9.7 7.9 6.3 14.7z"/><path fill="#FBBC05" d="M24 45c5.5 0 10.5-1.8 14.4-5l-6.6-5.4C29.8 36.4 27 37 24 37c-6 0-10.6-3-11.8-8.4l-7 5.4C8.7 41.1 15.8 45 24 45z"/><path fill="#EA4335" d="M44.5 20H24v8.5h11.8c-.7 2.8-2.4 5.1-4.8 6.6l6.6 5.4C41.8 37.3 45 31.1 45 24c0-1.4-.1-2.7-.5-4z"/></svg>
+        Sign up with Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+         GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
+         updateProfile, onAuthStateChanged, browserLocalPersistence, setPersistence
+       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyAe_7QNl-m_yDCzX7gYNN11eQ2t-iXDK68",
+  authDomain:"resumeai-a2b7a.firebaseapp.com",
+  projectId:"resumeai-a2b7a",
+  storageBucket:"resumeai-a2b7a.firebasestorage.app",
+  messagingSenderId:"656937907015",
+  appId:"1:656937907015:web:ffb81d5654784ac8385262"
+});
+const auth = getAuth(app);
+
+// Set persistence to LOCAL so Firebase remembers the user
+setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+function showMsg(text, type='error') {
+  const el = document.getElementById('msgMain');
+  el.textContent = (type==='error'?'⚠️ ':type==='success'?'✓ ':'ℹ️ ') + text;
+  el.className = 'msg ' + type;
+}
+function setLoading(id, loading, orig) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  b.disabled = loading;
+  b.innerHTML = loading ? '<div class="spinner"></div> Please wait…' : orig;
+}
+function friendlyErr(code) {
+  const m = {
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password. Please try again.',
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/email-already-in-use':'This email is already registered.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/too-many-requests':'Too many attempts. Please wait a few minutes.',
+    'auth/network-request-failed':'Network error. Check your connection.'
+  };
+  return m[code] || '';
+}
+
+async function doLogin(user) {
+  showMsg('Signing you in…', 'info');
+  try {
+    const r = await fetch('/auth/session', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        uid:   user.uid,
+        name:  user.displayName || '',
+        email: user.email || '',
+        photo: user.photoURL || ''
+      })
+    });
+    const d = await r.json().catch(()=>({ok:false}));
+    if (r.ok && d.ok) {
+      window.location.href = '/';
+    } else {
+      showMsg('Sign-in error: ' + (d.error || 'Unknown'));
+    }
+  } catch(e) {
+    showMsg('Network error. Please check your connection.');
+  }
+}
+
+// Handle Google redirect return
+getRedirectResult(auth).then(result => {
+  if (result?.user) doLogin(result.user);
+}).catch(e => {
+  if (e.code !== 'auth/popup-closed-by-user') {
+    const msg = friendlyErr(e.code);
+    if (msg) showMsg(msg);
+  }
+});
+
+// If Firebase already has a user (e.g. email login), redirect
+onAuthStateChanged(auth, user => {
+  if (user) doLogin(user);
+});
+
+window.switchTab = (tab) => {
+  document.getElementById('msgMain').className='msg';
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('tabReg').classList.toggle('active',tab==='register');
+  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display=tab==='register'?'block':'none';
+};
+
+window.signInEmail = async () => {
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  document.getElementById('msgMain').className='msg';
+  if(!email||!pass){showMsg('Please enter your email and password.');return;}
+  setLoading('btnLogin',true,'Sign In');
+  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ showMsg(friendlyErr(e.code)||'Sign-in failed.'); setLoading('btnLogin',false,'Sign In'); }
+};
+
+window.registerEmail = async () => {
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPassword').value;
+  document.getElementById('msgMain').className='msg';
+  if(!name){showMsg('Please enter your full name.');return;}
+  if(!email){showMsg('Please enter your email.');return;}
+  if(!pass||pass.length<6){showMsg('Password must be at least 6 characters.');return;}
+  setLoading('btnReg',true,'Create Account');
+  try{
+    const c=await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(c.user,{displayName:name});
+  }catch(e){ showMsg(friendlyErr(e.code)||'Registration failed.'); setLoading('btnReg',false,'Create Account'); }
+};
+
+window.signInGoogle = async () => {
+  document.getElementById('msgMain').className='msg';
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
+  try {
+    // Try popup first (faster), fall back to redirect
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+      // Popup blocked — use redirect
+      await signInWithRedirect(auth, provider);
+    } else {
+      const msg=friendlyErr(e.code);
+      if(msg) showMsg(msg);
+    }
+  }
+};
+
+window.continueAsGuest = async () => {
+  showMsg('Continuing as guest…','info');
+  try{
+    await fetch('/auth/guest',{method:'POST'});
+    window.location.href='/';
+  }catch(e){ showMsg('Something went wrong. Try again.'); }
+};
+</script>
+</body>
+</html>

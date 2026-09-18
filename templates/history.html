@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History — ResumeAI</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <div id="mobileSidebarBackdrop" onclick="closeMobileSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;"></div>
+  <style>#mobileSidebarBackdrop.active{display:block!important;}</style>
+
+  <aside class="sidebar">
+    <a class="sidebar-logo" href="/">
+      <div class="sidebar-logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <span class="sidebar-logo-text">Resume<span>AI</span></span>
+    </a>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Navigation</div>
+      <nav class="sidebar-nav">
+        <a href="/" class="snav-item"><span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Dashboard</a>
+        <a href="/history-page" class="snav-item active"><span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>History</a>
+        <a href="/compare-page" class="snav-item"><span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>Compare Resumes</a>
+      </nav>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-theme-row">
+        <span class="sidebar-theme-label">Appearance</span>
+        <div class="theme-pill">
+          <button class="theme-pill-btn active" id="btnLight" onclick="applyTheme('light')">☀️</button>
+          <button class="theme-pill-btn" id="btnDark" onclick="applyTheme('dark')">🌙</button>
+        </div>
+      </div>
+      <div class="sidebar-user" id="sidebarUser" onclick="toggleUserMenu()">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">?</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Loading…</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ResumeAI</div>
+        </div>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);flex-shrink:0;"><polyline points="18 15 12 9 6 15"/></svg>
+        <div class="sidebar-user-menu" id="sidebarUserMenu">
+          <a href="/logout" class="logout"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleMobileSidebar()" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-breadcrumb">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>History</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="/" class="topbar-btn primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Analysis
+        </a>
+      </div>
+    </header>
+
+    <div class="page">
+      <div style="margin-bottom:1.75rem;">
+        <p class="results-eyebrow">Dashboard</p>
+        <h2 class="results-h1">Resume History</h2>
+      </div>
+
+      <div class="history-stats" id="historyStats">
+        <div class="hstat"><div class="hstat-num" id="statTotal">—</div><div class="hstat-label">Total Analyses</div></div>
+        <div class="hstat"><div class="hstat-num purple" id="statAvgOverall">—</div><div class="hstat-label">Avg Overall Score</div></div>
+        <div class="hstat"><div class="hstat-num orange" id="statAvgAts">—</div><div class="hstat-label">Avg ATS Score</div></div>
+        <div class="hstat"><div class="hstat-num green" id="statBest">—</div><div class="hstat-label">Best Score</div></div>
+      </div>
+
+      <div class="rc" id="trendCard" style="display:none;margin-bottom:1rem;">
+        <div class="rc-hd">
+          <div class="rc-icon bg-purple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <h3>Score Trend</h3>
+        </div>
+        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+      </div>
+
+      <div class="rc">
+        <div class="rc-hd">
+          <div class="rc-icon bg-blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+          <h3>All Analyses</h3>
+        </div>
+        <div id="historyEmpty" style="display:none;text-align:center;padding:2.5rem;color:var(--muted);font-size:.9rem;">
+          No analyses yet. <a href="/" style="color:var(--purple);font-weight:700;">Analyze your first resume →</a>
+        </div>
+        <div class="history-table-wrap">
+          <table class="history-table" id="historyTable" style="display:none;">
+            <thead><tr><th>#</th><th>File</th><th>Overall</th><th>ATS</th><th>JD Match</th><th>Best Match</th><th>Date</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function initTheme(){const t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);document.getElementById('btnLight').classList.toggle('active',t==='light');document.getElementById('btnDark').classList.toggle('active',t==='dark');}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);document.getElementById('btnLight').classList.toggle('active',t==='light');document.getElementById('btnDark').classList.toggle('active',t==='dark');}
+function toggleUserMenu(){document.getElementById('sidebarUserMenu').classList.toggle('open');}
+document.addEventListener('click',e=>{const m=document.getElementById('sidebarUserMenu'),u=document.getElementById('sidebarUser');if(m&&u&&!u.contains(e.target))m.classList.remove('open');});
+initTheme();
+
+async function loadHistory(){
+  const res=await fetch('/history');
+  const data=await res.json();
+  if(!data.length){document.getElementById('historyEmpty').style.display='block';document.getElementById('statTotal').textContent='0';['statAvgOverall','statAvgAts','statBest'].forEach(id=>document.getElementById(id).textContent='—');return;}
+  const avgOverall=Math.round(data.reduce((s,r)=>s+(r.overall_score||0),0)/data.length);
+  const avgAts=Math.round(data.reduce((s,r)=>s+(r.ats_score||0),0)/data.length);
+  const best=Math.max(...data.map(r=>r.overall_score||0));
+  document.getElementById('statTotal').textContent=data.length;
+  document.getElementById('statAvgOverall').textContent=avgOverall+'%';
+  document.getElementById('statAvgAts').textContent=avgAts+'%';
+  document.getElementById('statBest').textContent=best+'%';
+
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const gc=isDark?'#252a3a':'#f0f1f3';
+  const tc=isDark?'#9aa0b8':'#7c8098';
+  const lc=isDark?'#edf0f8':'#3d4154';
+
+  if(data.length>=2){
+    document.getElementById('trendCard').style.display='block';
+    const labels=data.slice().reverse().map(r=>r.filename.replace('.pdf','').slice(0,14));
+    const overall=data.slice().reverse().map(r=>r.overall_score||0);
+    const ats=data.slice().reverse().map(r=>r.ats_score||0);
+    new Chart(document.getElementById('trendChart'),{type:'line',data:{labels,datasets:[
+      {label:'Overall Score',data:overall,borderColor:'#6c47c9',backgroundColor:'rgba(108,71,201,0.07)',tension:.4,fill:true,pointBackgroundColor:'#6c47c9',pointRadius:5,pointHoverRadius:7},
+      {label:'ATS Score',data:ats,borderColor:'#e05a1a',backgroundColor:'rgba(224,90,26,0.05)',tension:.4,fill:true,pointBackgroundColor:'#e05a1a',pointRadius:5,pointHoverRadius:7}
+    ]},options:{responsive:true,plugins:{legend:{labels:{font:{family:'Plus Jakarta Sans',size:12},color:lc}}},scales:{y:{min:0,max:100,grid:{color:gc},ticks:{color:tc,font:{family:'Plus Jakarta Sans'},callback:v=>v+'%'}},x:{grid:{display:false},ticks:{color:tc,font:{family:'Plus Jakarta Sans'}}}}}});
+  }
+
+  const tbody=document.getElementById('historyBody');
+  document.getElementById('historyTable').style.display='table';
+  tbody.innerHTML=data.map((r,i)=>{
+    const sc=r.overall_score>=80?'green':r.overall_score>=60?'purple':'red';
+    const ac=r.ats_score>=80?'green':r.ats_score>=60?'orange':'red';
+    const jd=(r.jd_score&&r.jd_score!=='None'&&r.jd_score!=='N/A')?r.jd_score+'%':'—';
+    const dt=new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    return `<tr><td style="color:var(--muted);font-size:.8rem">${i+1}</td><td class="file-cell" title="${r.filename}">${r.filename.slice(0,22)}${r.filename.length>22?'…':''}</td><td><span class="score-pill ${sc}">${r.overall_score||0}%</span></td><td><span class="score-pill ${ac}">${r.ats_score||0}%</span></td><td style="font-size:.82rem;color:var(--text2)">${jd}</td><td style="font-size:.8rem;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.best_match||'—'}</td><td style="font-size:.75rem;color:var(--muted)">${dt}</td></tr>`;
+  }).join('');
+}
+loadHistory();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app=initializeApp({apiKey:"AIzaSyAe_7QNl-m_yDCzX7gYNN11eQ2t-iXDK68",authDomain:"resumeai-a2b7a.firebaseapp.com",projectId:"resumeai-a2b7a",storageBucket:"resumeai-a2b7a.firebasestorage.app",messagingSenderId:"656937907015",appId:"1:656937907015:web:ffb81d5654784ac8385262"});
+const auth=getAuth(app);
+onAuthStateChanged(auth,async(user)=>{
+  const me=await(await fetch('/auth/me')).json();
+  if(!user&&!me.logged_in){window.location.href='/login';return;}
+  const name=user?user.displayName||user.email||'User':me.name||'Guest';
+  document.getElementById('sidebarUserName').textContent=name;
+  document.getElementById('sidebarUserRole').textContent=user?user.email||'':'Guest';
+  const av=document.getElementById('sidebarAvatar');
+  if(user&&user.photoURL){av.innerHTML='<img src="'+user.photoURL+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">';}
+  else{av.textContent=name.charAt(0).toUpperCase();}
+});
+document.querySelector('.logout').addEventListener('click',async(e)=>{e.preventDefault();await signOut(auth);window.location.href='/logout';});
+</script>
+<script>
+function toggleMobileSidebar(){const s=document.querySelector('.sidebar'),b=document.getElementById('mobileSidebarBackdrop');s.classList.toggle('mobile-open');b.classList.toggle('active');document.body.style.overflow=s.classList.contains('mobile-open')?'hidden':'';}
+function closeMobileSidebar(){const s=document.querySelector('.sidebar'),b=document.getElementById('mobileSidebarBackdrop');s.classList.remove('mobile-open');b.classList.remove('active');document.body.style.overflow='';}
+</script>
+</body>
+</html>
